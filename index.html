@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Skrip Afiliator Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4f46e5; /* Indigo 600 */
+            --primary-hover: #4338ca; /* Indigo 700 */
+            --bg-body: #f1f5f9; /* Slate 100 */
+            --bg-panel: #ffffff;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-body); 
+            color: #1e293b; /* Slate 800 */
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Utility Classes */
+        .smooth { transition: all 0.3s ease; }
+        .glass-overlay { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); }
+        
+        /* Animations */
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(20px); }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* Form styling adjustments */
+        input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row relative">
+
+    <!-- OVERLAY LOGIN -->
+    <div id="loginScreen" class="fixed inset-0 glass-overlay flex items-center justify-center z-50 smooth">
+        <div class="bg-white p-8 sm:p-10 rounded-2xl shadow-2xl w-full max-w-md mx-4 transform transition-all relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-indigo-600"></div>
+            
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-50 text-indigo-600 mb-4 ring-8 ring-indigo-50/50">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Akses Terkunci</h2>
+                <p class="text-slate-500 mt-2 text-sm leading-relaxed">Masukkan kode akses untuk menggunakan generator skrip pro.</p>
+            </div>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <input type="text" id="kodeAkses" placeholder="Ketik BUKA123" class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-xl outline-none text-center font-mono text-xl tracking-[0.2em] uppercase smooth text-slate-700 placeholder-slate-400" required autocomplete="off">
+                </div>
+                
+                <div id="loginError" class="hidden text-rose-600 text-sm text-center font-medium bg-rose-50 p-3 rounded-lg border border-rose-100">
+                    Kode salah atau kedaluwarsa.
+                </div>
+                
+                <button type="submit" id="loginBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-4 px-4 rounded-xl shadow-md hover:shadow-lg hover:shadow-indigo-500/30 transform transition-all active:scale-[0.98] flex justify-center items-center gap-2">
+                    <span id="loginBtnText">Buka Kunci Aplikasi</span>
+                    <svg id="loginSpinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APPLICATION WRAPPER -->
+    <div id="mainApp" class="hidden w-full flex-col lg:flex-row min-h-screen">
+        
+        <!-- SIDEBAR (LEFT PANEL) -->
+        <aside class="w-full lg:w-[420px] bg-white border-r border-slate-200 flex flex-col lg:h-screen lg:sticky lg:top-0 z-20 shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+            
+            <div class="p-6 border-b border-slate-100 flex items-center gap-3">
+                <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-slate-800 leading-tight">Generator Afiliasi</h1>
+                    <p class="text-xs text-slate-500 font-medium">Versi Pro 2.0</p>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6">
+                <form id="generatorForm" class="space-y-5">
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Produk</label>
+                        <input type="text" id="produk" placeholder="Cth: Mainan Edukasi Balok" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm smooth text-slate-700" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Target Audiens</label>
+                        <input type="text" id="audiens" placeholder="Cth: Ibu muda yang sibuk" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm smooth text-slate-700" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Masalah Utama (Pain Point)</label>
+                        <textarea id="masalah" rows="2" placeholder="Cth: Anak kecanduan gadget" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm resize-none smooth text-slate-700" required></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Solusi / Keunggulan</label>
+                        <textarea id="solusi" rows="2" placeholder="Cth: Belajar sambil bermain tanpa layar" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none text-sm resize-none smooth text-slate-700" required></textarea>
+                    </div>
+
+                    <!-- Toggle Mode Belajar -->
+                    <div class="pt-2">
+                        <label class="relative flex items-center p-4 rounded-xl border border-indigo-100 bg-indigo-50/50 cursor-pointer hover:bg-indigo-50 smooth group">
+                            <input type="checkbox" id="modeBelajar" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[18px] after:left-[18px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                            <span class="ml-4 flex-1">
+                                <span class="block text-sm font-bold text-indigo-900">Mode Belajar</span>
+                                <span class="block text-xs text-indigo-700/80 mt-0.5">Tampilkan alasan copywriting</span>
+                            </span>
+                        </label>
+                    </div>
+                </form>
+            </div>
+
+            <div class="p-6 border-t border-slate-100 bg-white">
+                <button type="button" id="generateBtn" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-semibold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-indigo-500/30 transform transition-all active:scale-[0.98] flex justify-center items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    Generate Konten
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT (RIGHT PANEL) -->
+        <main class="flex-1 relative lg:h-screen lg:overflow-y-auto">
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center text-center p-8 z-0 h-full min-h-[400px]">
+                <div class="w-20 h-20 mb-6 text-slate-200">
+                    <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-slate-500 mb-2">Belum Ada Konten</h3>
+                <p class="text-slate-400 max-w-sm text-sm leading-relaxed">Lengkapi formulir di sebelah kiri dan klik "Generate" untuk mulai meracik skrip video Anda.</p>
+            </div>
+
+            <!-- Results Area -->
+            <div id="resultsArea" class="hidden p-6 lg:p-10 max-w-5xl mx-auto z-10 relative">
+                
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800">Hasil *Copywriting* Anda</h2>
+                    <p class="text-slate-500 text-sm mt-1">Pilih dan sesuaikan draf di bawah ini dengan gaya bahasa Anda sendiri.</p>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
+                    
+                    <!-- CARD: HOOKS -->
+                    <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 slide-up" style="animation-delay: 0.1s;">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="bg-blue-100 text-blue-600 p-2 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg></div>
+                            <h3 class="text-lg font-bold text-slate-800">Alternatif Hook (3 Detik Pertama)</h3>
+                        </div>
+                        <div id="outputHooks" class="space-y-3"></div>
+                        
+                        <div class="learning-box hidden mt-5 p-4 bg-amber-50/80 border border-amber-200/60 rounded-xl text-sm text-amber-900 leading-relaxed">
+                            <span class="font-bold flex items-center gap-1.5 mb-1"><svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"></path></svg> Mengapa ini efektif?</span>
+                            Berdasarkan teknik <em>Slippery Slide</em> (Joseph Sugarman), kalimat pembuka harus mengganggu pola pikir penonton. Menggunakan empati terhadap <strong>Pain Point</strong> akan menahan jempol audiens agar tidak men-<em>scroll</em> video Anda.
+                        </div>
+                    </div>
+
+                    <!-- CARD: CTAs -->
+                    <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 slide-up" style="animation-delay: 0.2s;">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="bg-emerald-100 text-emerald-600 p-2 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg></div>
+                            <h3 class="text-lg font-bold text-slate-800">Call-to-Action (Soft Selling)</h3>
+                        </div>
+                        <div id="outputCTAs" class="space-y-3"></div>
+                        
+                        <div class="learning-box hidden mt-5 p-4 bg-amber-50/80 border border-amber-200/60 rounded-xl text-sm text-amber-900 leading-relaxed">
+                            <span class="font-bold flex items-center gap-1.5 mb-1"><svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"></path></svg> Mengapa ini efektif?</span>
+                            Penonton saat ini kebal dengan iklan keras ("Beli Sekarang!"). CTA yang memberikan "pilihan" (seperti <em>"baca review-nya dulu"</em>) justru terasa lebih natural, menurunkan pertahanan psikologis audiens, dan meningkatkan klik ke keranjang.
+                        </div>
+                    </div>
+
+                    <!-- CARD: FULL SCRIPT (Spans full width) -->
+                    <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 xl:col-span-2 slide-up" style="animation-delay: 0.3s;">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-purple-100 text-purple-600 p-2 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
+                                <h3 class="text-lg font-bold text-slate-800">Rekomendasi Alur Skrip Lengkap</h3>
+                            </div>
+                            <button onclick="copyToClipboard('outputScriptFull')" class="text-sm font-semibold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-4 py-2 rounded-lg smooth flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                Salin
+                            </button>
+                        </div>
+                        
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-6 lg:p-8 relative" id="outputScriptFull">
+                            <!-- Injected Script Timeline -->
+                        </div>
+
+                        <div class="learning-box hidden mt-5 p-4 bg-amber-50/80 border border-amber-200/60 rounded-xl text-sm text-amber-900 leading-relaxed">
+                            <span class="font-bold flex items-center gap-1.5 mb-1"><svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"></path></svg> Mengapa ini efektif?</span>
+                            Berdasarkan panduan <em>Video Marketing</em>, grafik retensi penonton turun drastis di detik ke-5. Oleh karena itu, kita membagi video menjadi blok pendek: [Hook] > [Validasi Masalah] > [Solusi Cepat] > [CTA]. Skema ini mencegah video terasa bertele-tele.
+                        </div>
+                    </div>
+
+                    <!-- CARD: VISUAL IDEAS -->
+                    <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200 xl:col-span-2 slide-up" style="animation-delay: 0.4s;">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-orange-100 text-orange-600 p-2 rounded-lg"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></div>
+                            <h3 class="text-lg font-bold text-slate-800">Ide Perekaman Visual (B-Roll)</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="outputVisuals">
+                            <!-- Injected Visual Ideas -->
+                        </div>
+
+                        <div class="learning-box hidden mt-5 p-4 bg-amber-50/80 border border-amber-200/60 rounded-xl text-sm text-amber-900 leading-relaxed">
+                            <span class="font-bold flex items-center gap-1.5 mb-1"><svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z"></path></svg> Mengapa ini efektif?</span>
+                            Aturan emas konten video adalah <em>"Show, Don't Tell"</em>. Audiens lebih mudah diyakinkan jika mereka melihat langsung masalah tersebut terjadi secara visual, dan bagaimana produk Anda menyelesaikannya (skenario <em>Before/After</em>).
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer within main area -->
+                <div class="mt-12 text-center text-sm font-medium text-slate-400">
+                    &copy; 2026 • Dirancang untuk Kinerja Kreator Afiliasi
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- LOGIC & SCRIPTS -->
+    <script>
+        // ==================== CONFIGURATION ====================
+        // GANTI URL DI BAWAH DENGAN URL GOOGLE APPS SCRIPT ANDA
+        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+        const FALLBACK_CODE = 'BUKA123'; // Kode darurat jika URL belum diset
+
+        // ==================== DOM ELEMENTS ====================
+        const ui = {
+            loginForm: document.getElementById('loginForm'),
+            loginScreen: document.getElementById('loginScreen'),
+            mainApp: document.getElementById('mainApp'),
+            loginBtn: document.getElementById('loginBtn'),
+            loginBtnText: document.getElementById('loginBtnText'),
+            loginSpinner: document.getElementById('loginSpinner'),
+            loginError: document.getElementById('loginError'),
+            kodeInput: document.getElementById('kodeAkses'),
+            
+            generateBtn: document.getElementById('generateBtn'),
+            modeBelajarToggle: document.getElementById('modeBelajar'),
+            
+            inputs: {
+                produk: document.getElementById('produk'),
+                audiens: document.getElementById('audiens'),
+                masalah: document.getElementById('masalah'),
+                solusi: document.getElementById('solusi')
+            },
+            
+            outputs: {
+                emptyState: document.getElementById('emptyState'),
+                resultsArea: document.getElementById('resultsArea'),
+                hooks: document.getElementById('outputHooks'),
+                ctas: document.getElementById('outputCTAs'),
+                scriptFull: document.getElementById('outputScriptFull'),
+                visuals: document.getElementById('outputVisuals')
+            }
+        };
+
+        // ==================== LOGIN SYSTEM ====================
+        ui.loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const kode = ui.kodeInput.value.trim().toUpperCase();
+            if (!kode) return;
+
+            // UI Loading State
+            setLoginLoading(true);
+
+            try {
+                // If URL is the placeholder, use fallback mode immediately
+                if (GOOGLE_SCRIPT_URL === 'YOUR_GOOGLE_SCRIPT_URL_HERE') {
+                    if (kode === FALLBACK_CODE) {
+                        setTimeout(unlockApp, 600); // Simulate network delay
+                    } else {
+                        showLoginError("Kode salah. (Gunakan BUKA123 untuk mode demo)");
+                    }
+                    return;
+                }
+
+                // Normal API Fetch
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?kode=${encodeURIComponent(kode)}`);
+                const result = await response.json();
+
+                if (result.valid) {
+                    unlockApp();
+                } else {
+                    showLoginError(result.message || "Kode akses tidak valid atau kedaluwarsa.");
+                }
+            } catch (error) {
+                // Network Error / Fallback
+                if (kode === FALLBACK_CODE) {
+                    unlockApp();
+                } else {
+                    showLoginError("Gagal menghubungi server. Pastikan Anda online.");
+                }
+            } finally {
+                if(ui.loginScreen.style.opacity !== '0') setLoginLoading(false);
+            }
+        });
+
+        function setLoginLoading(isLoading) {
+            ui.loginBtn.disabled = isLoading;
+            if(isLoading) {
+                ui.loginBtnText.textContent = "Memverifikasi...";
+                ui.loginSpinner.classList.remove('hidden');
+                ui.loginBtn.classList.add('opacity-80', 'cursor-wait');
+                ui.loginError.classList.add('hidden');
+            } else {
+                ui.loginBtnText.textContent = "Buka Kunci Aplikasi";
+                ui.loginSpinner.classList.add('hidden');
+                ui.loginBtn.classList.remove('opacity-80', 'cursor-wait');
+            }
+        }
+
+        function showLoginError(msg) {
+            ui.loginError.textContent = msg;
+            ui.loginError.classList.remove('hidden');
+            setLoginLoading(false);
+        }
+
+        function unlockApp() {
+            ui.loginScreen.style.opacity = '0';
+            setTimeout(() => {
+                ui.loginScreen.classList.add('hidden');
+                ui.mainApp.classList.remove('hidden');
+                ui.mainApp.classList.add('flex'); 
+                ui.inputs.produk.focus();
+            }, 500);
+        }
+
+        // ==================== GENERATOR LOGIC ====================
+        const templates = {
+            hooks: [
+                { type: "Curiosity", text: "Ternyata ini alasan utama kenapa {AUDIENS} sering pusing ngadepin {MASALAH}..." },
+                { type: "Empathy", text: "Capek banget kan tiap hari harus berurusan sama {MASALAH}? Aku juga pernah di posisi itu..." },
+                { type: "Direct Solution", text: "Ini dia rahasia paling simpel buat ngatasin {MASALAH} tanpa ribet." }
+            ],
+            ctas: [
+                "Kalau ngerasa ini solusi yang pas, cek detail harganya di keranjang kuning ya.",
+                "Boleh di-save dulu videonya biar gak hilang, atau kalau mau langsung coba, linknya ada di bawah.",
+                "Banyak yang udah buktiin sendiri lho. Baca-baca review-nya dulu aja di keranjang kuning."
+            ],
+            visuals: [
+                { title: "Adegan Awal", desc: "Tunjukkan ekspresi frustrasi/repot saat menghadapi {MASALAH}. Jangan lupa tambahkan teks pop-up yang mewakili isi hati penonton." },
+                { title: "Demonstrasi Produk", desc: "Close-up {PRODUK} sedang digunakan. Fokus perlihatkan dengan jelas bagaimana proses {SOLUSI} bekerja." },
+                { title: "Hasil Akhir", desc: "Tunjukkan ekspresi lega (Before & After) yang membuktikan bahwa masalah telah terselesaikan." }
+            ]
+        };
+
+        ui.generateBtn.addEventListener('click', () => {
+            // Validation
+            const form = document.getElementById('generatorForm');
+            if(!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Get & Sanitize Inputs
+            const produk = ui.inputs.produk.value.trim();
+            const audiens = ui.inputs.audiens.value.trim().toLowerCase();
+            const masalah = ui.inputs.masalah.value.trim();
+            const solusi = ui.inputs.solusi.value.trim();
+
+            const format = (text) => {
+                return text
+                    .replace(/{PRODUK}/g, `<span class="font-bold text-indigo-700">${produk}</span>`)
+                    .replace(/{AUDIENS}/g, `<span class="font-semibold text-slate-800">${audiens}</span>`)
+                    .replace(/{MASALAH}/g, `<span class="italic text-rose-700">${masalah}</span>`)
+                    .replace(/{SOLUSI}/g, `<span class="font-medium text-emerald-700">${solusi}</span>`);
+            };
+
+            // 1. Build Hooks
+            ui.outputs.hooks.innerHTML = templates.hooks.map(h => `
+                <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl hover:border-indigo-200 smooth group">
+                    <span class="text-[11px] font-bold text-indigo-500 uppercase tracking-wider block mb-1.5">${h.type} Hook</span>
+                    <p class="text-slate-700 leading-relaxed">"${format(h.text)}"</p>
+                </div>
+            `).join('');
+
+            // 2. Build CTAs
+            ui.outputs.ctas.innerHTML = templates.ctas.map(cta => `
+                <div class="p-4 bg-slate-50 border border-slate-100 rounded-xl hover:border-emerald-200 smooth flex items-start gap-3">
+                    <div class="mt-0.5"><svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></div>
+                    <p class="text-slate-700 leading-relaxed">"${format(cta)}"</p>
+                </div>
+            `).join('');
+
+            // 3. Build Full Script Timeline
+            ui.outputs.scriptFull.innerHTML = `
+                <div class="absolute left-[39px] top-8 bottom-8 w-px bg-slate-200 z-0 hidden sm:block"></div>
+                
+                <div class="relative z-10 mb-8 flex flex-col sm:flex-row gap-4">
+                    <div class="shrink-0 flex items-center sm:items-start gap-3 sm:w-24">
+                        <div class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-xs shrink-0 ring-4 ring-white shadow-sm">0-3s</div>
+                        <span class="text-xs font-bold text-slate-500 uppercase mt-2 hidden sm:block">Hook</span>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-4 rounded-xl flex-1 shadow-sm">
+                        <p class="text-slate-800 leading-relaxed">"Stop scroll dulu kalau kamu, para ${audiens}, lagi ngerasa kewalahan banget ngadepin ${masalah}!"</p>
+                    </div>
+                </div>
+
+                <div class="relative z-10 mb-8 flex flex-col sm:flex-row gap-4">
+                    <div class="shrink-0 flex items-center sm:items-start gap-3 sm:w-24">
+                        <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shrink-0 ring-4 ring-white shadow-sm">3-15s</div>
+                        <span class="text-xs font-bold text-indigo-500 uppercase mt-2 hidden sm:block">Edukasi</span>
+                    </div>
+                    <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl flex-1 shadow-sm">
+                        <p class="text-slate-800 leading-relaxed">"Dulu aku juga ngerasain hal yang sama, sampai akhirnya aku nemu <strong class="text-indigo-700">${produk}</strong>. Serius, ini ngebantu banget karena dia bisa ngasih ${solusi}, jadi rutinitas bener-bener kerasa jauh lebih gampang."</p>
+                    </div>
+                </div>
+
+                <div class="relative z-10 flex flex-col sm:flex-row gap-4">
+                    <div class="shrink-0 flex items-center sm:items-start gap-3 sm:w-24">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-xs shrink-0 ring-4 ring-white shadow-sm">15-30s</div>
+                        <span class="text-xs font-bold text-emerald-500 uppercase mt-2 hidden sm:block">CTA</span>
+                    </div>
+                    <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex-1 shadow-sm">
+                        <p class="text-slate-800 leading-relaxed">"Nggak ada salahnya investasi ke hal yang beneran ngasih solusi. Mumpung lagi promo, cek langsung di keranjang kuning ya sebelum kehabisan!"</p>
+                    </div>
+                </div>
+            `;
+
+            // 4. Build Visuals
+            ui.outputs.visuals.innerHTML = templates.visuals.map((v, i) => `
+                <div class="bg-orange-50 border border-orange-100 p-5 rounded-xl relative overflow-hidden group">
+                    <div class="absolute -right-4 -top-4 text-orange-500/10 font-black text-7xl transition-transform group-hover:scale-110">0${i+1}</div>
+                    <h4 class="font-bold text-orange-900 mb-2 relative z-10 text-sm uppercase tracking-wide">${v.title}</h4>
+                    <p class="text-sm text-orange-900/80 relative z-10 leading-relaxed">${format(v.desc)}</p>
+                </div>
+            `).join('');
+
+            // 5. Toggle UI States
+            ui.outputs.emptyState.classList.add('hidden');
+            ui.outputs.resultsArea.classList.remove('hidden');
+            
+            // Re-apply learning mode state
+            toggleLearningMode();
+
+            // Scroll to results on mobile
+            if (window.innerWidth < 1024) {
+                ui.outputs.resultsArea.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        // ==================== UTILITIES ====================
+        
+        // Mode Belajar Logic
+        ui.modeBelajarToggle.addEventListener('change', toggleLearningMode);
+
+        function toggleLearningMode() {
+            const boxes = document.querySelectorAll('.learning-box');
+            if(ui.modeBelajarToggle.checked) {
+                boxes.forEach(box => {
+                    box.classList.remove('hidden');
+                    box.classList.add('fade-in');
+                });
+            } else {
+                boxes.forEach(box => {
+                    box.classList.add('hidden');
+                    box.classList.remove('fade-in');
+                });
+            }
+        }
+
+        // Copy to Clipboard Fallback Function
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            // We want just the text content, strip out the HTML spans visually but keep the text
+            const textToCopy = el.innerText.replace(/0-3s\n|3-15s\n|15-30s\n|Hook\n|Edukasi\n|CTA\n/g, ''); 
+            
+            // Clean up multiple newlines that might occur from the flex layout text extraction
+            const cleanText = textToCopy.replace(/\n\s*\n/g, '\n\n').trim();
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(cleanText).then(showCopySuccess);
+            } else {
+                // Fallback for older browsers or non-secure contexts (iframe)
+                const textArea = document.createElement("textarea");
+                textArea.value = cleanText;
+                textArea.style.position = "absolute";
+                textArea.style.left = "-999999px";
+                document.body.prepend(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showCopySuccess();
+                } catch (error) {
+                    console.error('Fallback copy failed', error);
+                } finally {
+                    textArea.remove();
+                }
+            }
+        }
+
+        function showCopySuccess() {
+            // Temporary simple notification mechanism avoiding native alert()
+            const notif = document.createElement('div');
+            notif.className = 'fixed bottom-4 right-4 bg-slate-900 text-white px-6 py-3 rounded-xl shadow-2xl z-50 fade-in flex items-center gap-2 text-sm font-medium';
+            notif.innerHTML = '<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Skrip disalin!';
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                notif.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => notif.remove(), 300);
+            }, 2500);
+        }
+
+    </script>
+</body>
+</html>
